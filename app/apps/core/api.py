@@ -5,7 +5,12 @@ from ninja import Router
 
 from apps.core.auth import create_access_token, create_refresh_token, decode_token
 from apps.core.exceptions import AppError
-from apps.core.schemas import TokenObtainIn, TokenObtainOut, TokenRefreshIn, TokenRefreshOut
+from apps.core.schemas import (
+    TokenObtainIn,
+    TokenObtainOut,
+    TokenRefreshIn,
+    TokenRefreshOut,
+)
 
 router = Router(tags=["auth"])
 
