@@ -1,0 +1,68 @@
+[project]
+name = "novo-projeto"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "django>=6.0.7",
+    "django-cors-headers>=4.9.0",
+    "django-ninja>=1.6.2",
+    "gunicorn>=23.0",
+    "psycopg[binary]>=3.3.4",
+    "pyjwt>=2.13.0",
+    "python-decouple>=3.8",
+    "whitenoise>=6.9",
+]
+
+[dependency-groups]
+dev = [
+    "django-stubs[compatible-mypy]>=5.1",
+    "factory-boy>=3.3.3",
+    "mypy>=2.3.0",
+    "pre-commit>=4.6.1",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "pytest-django>=4.12.0",
+    "ruff>=0.16.0",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+pythonpath = ["app"]
+testpaths = ["app"]
+python_files = ["test_*.py", "*_test.py"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py314"
+extend-exclude = ["migrations"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "DJ"]
+
+[tool.ruff.lint.per-file-ignores]
+"app/config/settings.py" = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["apps", "config"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+python_version = "3.14"
+plugins = ["mypy_django_plugin.main"]
+strict = true
+exclude = ["^\\.venv/", "migrations/"]
+
+[tool.django-stubs]
+django_settings_module = "config.settings"
+
+
+[tool.coverage.run]
+source = ["apps", "config"]
+omit = ["*/migrations/*", "*/tests/*", "*/factories.py"]
+
+[tool.coverage.report]
+show_missing = true

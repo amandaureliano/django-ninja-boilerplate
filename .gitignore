@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Environment variables
+.env
+
+# Django
+db.sqlite3
+staticfiles/
+media/
+
+# Logs
+*.log
+
+# Type checking / linting cache
+.mypy_cache/
+.ruff_cache/
+
+.pytest_cache/
