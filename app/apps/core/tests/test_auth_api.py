@@ -22,9 +22,7 @@ def test_obtain_token():
 
 @pytest.mark.django_db
 def test_obtain_token_invalid_credentials():
-    response = client.post(
-        "/token", json={"username": "wrong", "password": "wrong"}
-    )
+    response = client.post("/token", json={"username": "wrong", "password": "wrong"})
     assert response.status_code == 401
 
 
