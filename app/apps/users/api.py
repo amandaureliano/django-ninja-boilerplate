@@ -9,4 +9,4 @@ router = Router(tags=["users"])
 
 @router.get("/me", response=UserOut, auth=JWTAuth())
 def me(request: HttpRequest) -> UserOut:
-    return request.user  # type: ignore[return-value]
+    return request.auth  # type: ignore[return-value]
