@@ -1,6 +1,6 @@
-# Novo Projeto
+# django-ninja-boilerplate
 
-Stack: Django 6 · Django Ninja · PostgreSQL · Python 3.14 · uv
+Stack: Django 6 · Django Ninja · PostgreSQL · Python 3.14 · uv · Granian · Google SSO
 
 ## Requisitos
 
@@ -45,36 +45,56 @@ make format       # ruff format
 
 Documentação interativa disponível em **`/api/docs`** (Swagger UI).
 
-| Método | Endpoint              | Auth     | Descrição               |
-|--------|-----------------------|----------|-------------------------|
-| GET    | `/api/health`         | —        | Health check            |
-| POST   | `/api/auth/token`     | —        | Obtém access + refresh  |
-| POST   | `/api/auth/token/refresh` | —    | Renova access token     |
-| GET    | `/api/users/me`       | Bearer   | Perfil do usuário       |
+| Método | Endpoint                  | Auth   | Descrição                       |
+|--------|---------------------------|--------|---------------------------------|
+| GET    | `/api/health`             | —      | Health check                    |
+| POST   | `/api/auth/token`         | —      | Obtém access + refresh token    |
+| POST   | `/api/auth/token/refresh` | —      | Renova access token             |
+| POST   | `/api/auth/social/google` | —      | Login via Google (access token) |
+| GET    | `/api/users/me`           | Bearer | Perfil do usuário autenticado   |
+
+### Google SSO
+
+**Fluxo web (redirect OAuth):**
+```
+GET /auth/login/google-oauth2/
+```
+
+**Fluxo API (SPA/mobile):** envie o access token do Google para `/api/auth/social/google` e receba os tokens JWT do sistema.
+
+Para ativar, configure no `.env`:
+```
+GOOGLE_OAUTH2_KEY=seu-client-id
+GOOGLE_OAUTH2_SECRET=seu-client-secret
+```
+Credenciais em [console.cloud.google.com](https://console.cloud.google.com) → APIs & Services → Credentials.
 
 ## Estrutura
 
 ```
 app/
 ├── apps/
-│   ├── core/           # Infraestrutura transversal
-│   │   ├── auth.py     # JWTAuth + helpers de token
+│   ├── core/              # Infraestrutura transversal
+│   │   ├── auth.py        # JWTAuth + helpers de token
 │   │   ├── exceptions.py  # AppError
-│   │   ├── models.py   # BaseModel (uuid, timestamps)
-│   │   ├── schemas.py  # Schemas de autenticação
-│   │   └── api.py      # Endpoints de auth (/auth/token)
-│   └── users/          # Feature: usuários
-│       ├── models.py   # User (AbstractUser customizado)
-│       ├── schemas.py  # UserOut
-│       ├── api.py      # GET /users/me
-│       ├── views.py    # Views HTML (hybrid)
-│       ├── factories.py
-│       └── tests/
+│   │   ├── models.py      # BaseModel (uuid, timestamps)
+│   │   ├── schemas.py     # Schemas de autenticação
+│   │   └── api.py         # Endpoints de auth e Google SSO
+│   └── users/             # Feature: usuários
+│       ├── models.py      # User (AbstractUser customizado)
+│       ├── schemas.py     # UserOut
+│       ├── api.py         # GET /users/me
+│       └── views.py       # Views HTML (hybrid)
 ├── config/
 │   ├── settings.py
-│   ├── api.py          # NinjaAPI + exception handlers
+│   ├── api.py             # NinjaAPI + exception handlers
 │   └── urls.py
 └── templates/
+tests/
+├── factories/             # Factories para testes
+├── conftest.py
+├── test_auth.py
+└── test_users.py
 ```
 
 ## Variáveis de ambiente
