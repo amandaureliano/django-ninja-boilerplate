@@ -1,8 +1,8 @@
 import pytest
+from factories import UserFactory
 from ninja.testing import TestClient
 
 from apps.core.auth import create_refresh_token
-from apps.users.factories import UserFactory
 from config.api import api
 
 client = TestClient(api)
