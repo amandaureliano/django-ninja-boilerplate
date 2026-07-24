@@ -17,3 +17,7 @@ class TokenRefreshIn(Schema):
 
 class TokenRefreshOut(Schema):
     access: str
+
+
+class GoogleTokenIn(Schema):
+    access_token: str

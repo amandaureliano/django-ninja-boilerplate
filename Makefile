@@ -1,7 +1,7 @@
 .PHONY: run migrate migrations shell test coverage lint format
 
 run:
-	uv run python app/manage.py runserver
+	PYTHONPATH=app uv run granian --interface asgi config.asgi:application --port 8000 --reload
 
 migrate:
 	uv run python app/manage.py migrate

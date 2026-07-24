@@ -1,4 +1,5 @@
-from django.contrib.auth import authenticate
+import requests
+from django.contrib.auth import authenticate, get_user_model
 from django.http import HttpRequest
 from jwt import InvalidTokenError
 from ninja import Router
@@ -6,11 +7,14 @@ from ninja import Router
 from apps.core.auth import create_access_token, create_refresh_token, decode_token
 from apps.core.exceptions import AppError
 from apps.core.schemas import (
+    GoogleTokenIn,
     TokenObtainIn,
     TokenObtainOut,
     TokenRefreshIn,
     TokenRefreshOut,
 )
+
+User = get_user_model()
 
 router = Router(tags=["auth"])
 
@@ -35,3 +39,32 @@ def refresh_token(request: HttpRequest, payload: TokenRefreshIn) -> TokenRefresh
         return TokenRefreshOut(access=create_access_token(data["user_id"]))
     except InvalidTokenError as exc:
         raise AppError("Token inválido ou expirado.", status=401) from exc
+
+
+@router.post("/social/google", response=TokenObtainOut, auth=None)
+def google_auth(request: HttpRequest, payload: GoogleTokenIn) -> TokenObtainOut:
+    resp = requests.get(
+        "https://www.googleapis.com/oauth2/v3/userinfo",
+        headers={"Authorization": f"Bearer {payload.access_token}"},
+        timeout=10,
+    )
+    if resp.status_code != 200:
+        raise AppError("Token Google inválido.", status=401)
+
+    data = resp.json()
+    email: str = data.get("email", "")
+    if not email or not data.get("email_verified"):
+        raise AppError("Email Google não verificado.", status=400)
+
+    user, _ = User.objects.get_or_create(
+        email=email,
+        defaults={
+            "username": email[:150],
+            "first_name": data.get("given_name", ""),
+            "last_name": data.get("family_name", ""),
+        },
+    )
+    return TokenObtainOut(
+        access=create_access_token(user.pk),
+        refresh=create_refresh_token(user.pk),
+    )
